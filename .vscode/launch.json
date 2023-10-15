@@ -8,6 +8,13 @@
       "preLaunchTask": "build",
       "internalConsoleOptions": "neverOpen",
       "env": { "PLAYDATE_OUTPUT" : "${config:playdate.output}" }
+    },
+    {
+      "type": "playdate",
+      "request": "launch",
+      "name": "Playdate: Debug",
+      "preLaunchTask": "${defaultBuildTask}"
     }
   ]
-}
+}/
+

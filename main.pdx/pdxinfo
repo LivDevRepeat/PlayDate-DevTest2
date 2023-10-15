@@ -5,3 +5,5 @@ bundleID=com.domain.GameName
 version=1.0
 imagePath=SystemAssets/
 buildNumber=4
+pdxversion=20000
+buildtime=750706560

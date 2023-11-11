@@ -20,7 +20,7 @@ debugReadData()
 
 function playdate.update()  
     if playdate.buttonJustReleased( playdate.kButtonA) then
-        draw()
+        addAndDrawNewTableEntry()
         j+=1
     end
     
@@ -43,11 +43,10 @@ function playdate.update()
     
 end
 
-function draw()
+function addAndDrawNewTableEntry()
     i = #inrData +1;
     inrData[i] = "I created " .. tostring(i) .. " entries in the inr save data!"
     gfx.drawText(inrData[i], 0, 20*j)
-    playdate.datastore.write(table, "test",true)
 end
 
 

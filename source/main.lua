@@ -6,13 +6,21 @@ import  "CoreLibs/timer"
 import "Test"
 
 local gfx <const> = playdate.graphics
-local inrData = {}
-local i = 0
+
+
 local j = 0
+local inrData = {}
+
+function debugReadData()
+  local inrSaveData = playdate.datastore.read()
+  inrData = inrSaveData
+ end
+
+debugReadData()
+
 function playdate.update()  
     if playdate.buttonJustReleased( playdate.kButtonA) then
-        test(i)
-        i+=1
+        draw()
         j+=1
     end
     
@@ -20,10 +28,26 @@ function playdate.update()
         j=0
         gfx.clear()
     end
+    
+    if playdate.buttonJustPressed(playdate.kButtonUp) then
+        playdate.datastore.write(inrData)
+    end
+    
+    if playdate.buttonJustPressed(playdate.kButtonDown) then
+       debugReadData()
+    end
+    
+    if playdate.buttonJustPressed(playdate.kButtonLeft) then
+        playdate.datastore.delete()
+    end
+    
 end
 
-function test(i)
-    inrData[i]= "test Function got called! FRAME: " .. tostring(i)
+function draw()
+    i = #inrData +1;
+    inrData[i] = "I created " .. tostring(i) .. " entries in the inr save data!"
     gfx.drawText(inrData[i], 0, 20*j)
     playdate.datastore.write(table, "test",true)
 end
+
+

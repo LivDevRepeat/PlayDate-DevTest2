@@ -8,21 +8,22 @@ import "Test"
 local gfx <const> = playdate.graphics
 local inrData = {}
 local i = 0
+local j = 0
 function playdate.update()  
     if playdate.buttonJustReleased( playdate.kButtonA) then
-       test(i)
-       i+=1
+        test(i)
+        i+=1
+        j+=1
+    end
+    
+    if playdate.buttonJustPressed(playdate.kButtonB) then
+        j=0
+        gfx.clear()
     end
 end
 
 function test(i)
-    gfx.clear()
     inrData[i]= "test Function got called! FRAME: " .. tostring(i)
-
-    for  j=0,i,1 do
-     
-        gfx.drawText(inrData[j], 20, 20*j)
-        end
-  
+    gfx.drawText(inrData[i], 0, 20*j)
     playdate.datastore.write(table, "test",true)
 end

@@ -1,5 +1,5 @@
-name=Game Name
-author=Author Name
+name=DevTest Version 2
+author=LivDevRepeat
 description=This is a Playdate game.
 bundleID=com.domain.GameName
 version=1.0

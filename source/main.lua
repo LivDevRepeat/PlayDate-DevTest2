@@ -126,10 +126,10 @@ function drawAllSquares()
    
    
    local gfx = playdate.graphics
-   local gridview = playdate.ui.gridview.new(44, 44)
+   local gridview = playdate.ui.gridview.new(40, 40)
   -- gridview.backgroundImage = playdate.graphics.nineSlice.new('shadowbox', 4, 4, 45, 45)
-   gridview:setNumberOfColumns(8)
-   gridview:setNumberOfRows(2, 4, 3, 5) -- number of sections is set automatically
+   gridview:setNumberOfColumns(6)
+   gridview:setNumberOfRows(1, 2, 3, 5) -- number of sections is set automatically
    gridview:setSectionHeaderHeight(24)
    gridview:setContentInset(1, 4, 1, 4)
    gridview:setCellPadding(4, 4, 4, 4)
@@ -150,7 +150,7 @@ function drawAllSquares()
    end
    
  function drawUIGrid()
-       gridview:drawInRect(0, 0, 400, 240)
+       gridview:drawInRect(20, 20, 400, 200)
        playdate.timer:updateTimers()
    end
    
@@ -158,7 +158,7 @@ function drawAllSquares()
    -- CREATE GAMEMODE TABLE --
    
    function setGameMode()
-       gameMode = 2
+       gameMode = 3
        onUpdates = {
            [1]={title = "Keyboard Test", draw = drawTextMode, manageInputs = debugKeyBoardControls },
            [2]={title = "Square Test", draw = drawAllSquares, manageInputs = debugControlls },

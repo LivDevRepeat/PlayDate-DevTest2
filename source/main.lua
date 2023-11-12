@@ -3,6 +3,8 @@ import "CoreLibs/object"
 import "CoreLibs/sprites"
 import  "CoreLibs/timer"
 import "CoreLibs/keyboard"
+import "CoreLibs/ui"
+import "CoreLibs/nineslice"
 
 import "Test"
 
@@ -111,30 +113,56 @@ function debugControlls()
   end
   
   -- HERE THE LOGIC FOR DRAWING SQUARES RESIDES --
-
-
-  
 function drawAllSquares()
      local screenWidth, screenHeight = playdate.display.getSize()
      for i=4,0,-1 do
        for j=3,0,-1 do
-       smileImage:drawAnchored(screenWidth*i/4, screenHeight*j/3, 0.5, 0.5)
+         smileImage:drawAnchored(screenWidth*i/4, screenHeight*j/3,0.5,0.5)
         end
      end
  end
- 
+
+   -- DRAW UI GRID
    
-   -- DRAWIMAGE
+   
+   local gfx = playdate.graphics
+   local gridview = playdate.ui.gridview.new(44, 44)
+  -- gridview.backgroundImage = playdate.graphics.nineSlice.new('shadowbox', 4, 4, 45, 45)
+   gridview:setNumberOfColumns(8)
+   gridview:setNumberOfRows(2, 4, 3, 5) -- number of sections is set automatically
+   gridview:setSectionHeaderHeight(24)
+   gridview:setContentInset(1, 4, 1, 4)
+   gridview:setCellPadding(4, 4, 4, 4)
+   gridview.changeRowOnColumnWrap = false
+   
+   function gridview:drawCell(section, row, column, selected, x, y, width, height)
+       if selected then
+           gfx.drawCircleInRect(x-2, y-2, width+4, height+4, 3)
+       else
+           gfx.drawCircleInRect(x+4, y+4, width-8, height-8, 0)
+       end
+       local cellText = ""..row.."-"..column
+       gfx.drawTextInRect(cellText, x, y+14, width, 20, nil, nil, kTextAlignment.center)
+   end
+   
+   function gridview:drawSectionHeader(section, x, y, width, height)
+       gfx.drawText("*SECTION ".. section .. "*", x + 10, y + 8)
+   end
+   
+ function drawUIGrid()
+       gridview:drawInRect(0, 0, 400, 240)
+       playdate.timer:updateTimers()
+   end
    
    
    -- CREATE GAMEMODE TABLE --
    
    function setGameMode()
-       gameMode = 1
+       gameMode = 2
        onUpdates = {
            [1]={title = "Keyboard Test", draw = drawTextMode, manageInputs = debugKeyBoardControls },
            [2]={title = "Square Test", draw = drawAllSquares, manageInputs = debugControlls },
-           --[3]={title = "Image Test", draw = drawImage, manageInputs = debugControlls },
+           [3]={title = "Grid Test", draw = drawUIGrid, manageInputs = debugControlls },
        }
    end  
    

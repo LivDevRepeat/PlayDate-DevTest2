@@ -13,6 +13,36 @@ local j = 0
 local inrData = {}
  local gameMode = 1
  local onUpdates = {}
+ 
+ -- In this example, we'll be drawing a smiley face to an image, which saves our
+ -- drawing, makes it easier to draw, and helps improve performance since we don't
+ -- have to redraw each element separately each time
+ local gfx = playdate.graphics
+ 
+ local smileWidth, smileHeight = 36, 36
+ local smileImage = gfx.image.new(smileWidth, smileHeight)
+ -- Pushing our new image to the graphics context, so everything
+ -- drawn will be drawn directly to the image
+ gfx.pushContext(smileImage)
+     -- => Indentation not required, but helps organize things!
+     gfx.setColor(gfx.kColorWhite)
+     -- Coordinates are based on the image being drawn into
+     -- (e.g. (x=0, y=0) refers to the top left of the image)
+     gfx.fillCircleInRect(0, 0, smileWidth, smileHeight)
+     gfx.setColor(gfx.kColorBlack)
+     -- Drawing the eyes
+     gfx.fillCircleAtPoint(11, 13, 3)
+     gfx.fillCircleAtPoint(25, 13, 3)
+     -- Drawing the mouth
+     gfx.setLineWidth(3)
+     gfx.drawArc(smileWidth/2, smileHeight/2, 11, 115, 245)
+     -- Drawing the outline
+     gfx.setLineWidth(2)
+     gfx.setStrokeLocation(gfx.kStrokeInside)
+     gfx.drawCircleInRect(0, 0, smileWidth, smileHeight)
+ -- Popping context to stop drawing to image
+ gfx.popContext()
+
 
 function debugReadData()
       local inrSaveData = playdate.datastore.read()
@@ -24,22 +54,16 @@ function debugReadData()
  end
  
 
-
-
-
-
-
 function debugControlls()
      
      if playdate.buttonJustPressed(playdate.kButtonUp) then
-         availableGameModes = #onUpdates
-         newGamemode = (gameMode % availableGameModes)+1
-         print (newGamemode)
-         gameMode = new
+        availableGameModes = #onUpdates
+        newGamemode = (gameMode % availableGameModes)+1
+        gameMode = newGamemode
      end
      
      if playdate.buttonJustPressed(playdate.kButtonDown) then
-       
+       setUpSmiley()
      end
      
      if playdate.buttonJustPressed(playdate.kButtonLeft) then
@@ -59,9 +83,8 @@ function debugControlls()
       if playdate.keyboard.isVisible() then 
           debugKeyBoardControls()
           gfx.drawText("Next ENTRY will be: " .. playdate.keyboard.text  , 20, 100)
-      else
-          debugControlls()   
-      end 
+      end
+      
       gfx.drawText("Welcome to the debug Save Data Experiment", 20, 20)
       if #inrData == 0 then
           gfx.drawText("NO INR", 20, 40)
@@ -72,10 +95,13 @@ function debugControlls()
   end
   
   function debugKeyBoardControls() 
-      if playdate.buttonJustPressed(playdate.kButtonB) then
-      playdate.keyboard.hide()
-      end 
-      
+    debugControlls()
+    if playdate.buttonJustPressed("a") then
+        playdate.keyboard.show()
+    end
+    if playdate.buttonJustPressed("b") then
+        playdate.keyboard.hide()
+    end 
   end
   
   function playdate.keyboard.keyboardWillHideCallback() 
@@ -85,24 +111,32 @@ function debugControlls()
   end
   
   -- HERE THE LOGIC FOR DRAWING SQUARES RESIDES --
-  
-  function drawAllSquares()
-       for i=3,0,-1 do
-           gfx.fillRect(15, 15, 20, 20)
-       end
-   end
-   
-   
 
+
+  
+function drawAllSquares()
+     local screenWidth, screenHeight = playdate.display.getSize()
+     for i=4,0,-1 do
+       for j=3,0,-1 do
+       smileImage:drawAnchored(screenWidth*i/4, screenHeight*j/3, 0.5, 0.5)
+        end
+     end
+ end
+ 
+   
+   -- DRAWIMAGE
+   
+   
+   -- CREATE GAMEMODE TABLE --
    
    function setGameMode()
        gameMode = 1
        onUpdates = {
-           [1]={ onUpdate = drawTextMode},
-           [2]={ onUpdate = drawAllSquares},
+           [1]={title = "Keyboard Test", draw = drawTextMode, manageInputs = debugKeyBoardControls },
+           [2]={title = "Square Test", draw = drawAllSquares, manageInputs = debugControlls },
+           --[3]={title = "Image Test", draw = drawImage, manageInputs = debugControlls },
        }
-   end
-   
+   end  
    
    -- PRE  UPDATE CALLS --
    debugReadData()
@@ -112,7 +146,10 @@ function debugControlls()
    
    function playdate.update()  
        gfx.clear()  
-       onUpdates[gameMode].onUpdate()
+       onUpdates[gameMode].draw()
+       onUpdates[gameMode].manageInputs()
+       
+       gfx.drawText(onUpdates[gameMode].title,0,220)
    end
 
 
